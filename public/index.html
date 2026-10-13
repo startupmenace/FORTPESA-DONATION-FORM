@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make a donation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #eef1f7; --card: #fff; --ink: #1b1a2e; --muted: #5d6078; --line: #d9dce8;
+    --red: #d7263d; --gold: #f4a300; --green: #1b7a4b; --green-dark: #14603a; --tint: #e8f4ee;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif; color: var(--ink); background: var(--page);
+    min-height: 100dvh; display: flex; justify-content: center; align-items: center; padding: 20px;
+  }
+  .card { width: 100%; max-width: 440px; background: var(--card); border-radius: 22px; overflow: hidden; box-shadow: 0 18px 50px rgba(27, 26, 46, .14); }
+  .kanga { height: 12px; background: repeating-linear-gradient(90deg, var(--red) 0 28px, var(--ink) 28px 34px, var(--gold) 34px 62px, var(--ink) 62px 68px, var(--green) 68px 96px, var(--ink) 96px 102px); }
+  .body { padding: 28px 26px 26px; }
+  h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 6px; font-weight: 800; letter-spacing: -.02em; }
+  .sub { color: var(--muted); margin: 0 0 26px; font-size: .98rem; }
+
+  .amount-box { display: flex; align-items: baseline; gap: 10px; padding: 14px 4px 10px; border-bottom: 3px solid var(--line); transition: border-color .15s; }
+  .amount-box:focus-within { border-color: var(--green); }
+  .amount-box.invalid { border-color: var(--red); }
+  .amount-box span { font-weight: 700; color: var(--muted); font-size: 1.3rem; }
+  #amount { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-weight: 800; font-size: 3.4rem; letter-spacing: -.03em; color: var(--ink); padding: 0; }
+  #amount::placeholder { color: #c3c6d6; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 24px; }
+  .chip { font: inherit; font-weight: 700; font-size: .95rem; padding: 9px 16px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  .chip:hover { border-color: var(--ink); }
+  .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  label.lbl { display: block; font-weight: 700; font-size: .92rem; margin-bottom: 8px; }
+  .phone { display: flex; align-items: center; border: 2px solid var(--line); border-radius: 14px; background: #fff; transition: border-color .15s; }
+  .phone:focus-within { border-color: var(--green); }
+  .phone.invalid { border-color: var(--red); }
+  .phone .cc { padding: 0 4px 0 16px; font-weight: 700; color: var(--muted); }
+  #phone { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 1.15rem; font-weight: 600; letter-spacing: .02em; padding: 15px 16px 15px 6px; color: var(--ink); }
+  #phone::placeholder { color: #b5b8cb; font-weight: 400; }
+  .msg { min-height: 1.4em; margin: 8px 2px 0; font-size: .88rem; font-weight: 600; color: var(--red); }
+  .hint { color: var(--muted); font-size: .86rem; margin: 8px 2px 0; }
+
+  .btn { display: block; width: 100%; font: inherit; font-weight: 800; font-size: 1.1rem; padding: 17px; border: 0; border-radius: 14px; background: var(--green); color: #fff; cursor: pointer; margin-top: 20px; transition: background .15s, transform .1s; }
+  .btn:hover { background: var(--green-dark); }
+  .btn:active { transform: scale(.985); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); margin-top: 12px; }
+  .btn.ghost:hover { border-color: var(--ink); background: transparent; }
+  .btn:disabled { opacity: .6; cursor: wait; }
+  button:focus-visible, .chip:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .secure { text-align: center; color: var(--muted); font-size: .84rem; margin: 14px 0 0; }
+
+  .state { text-align: center; padding: 6px 0 2px; }
+  .state h2 { font-size: 1.6rem; margin: 16px 0 8px; font-weight: 800; letter-spacing: -.02em; }
+  .state p { color: var(--muted); margin: 0 0 6px; }
+  .phone-pill { display: inline-block; background: var(--tint); color: var(--green-dark); font-weight: 800; padding: 6px 14px; border-radius: 999px; margin: 6px 0 4px; }
+  .steps { text-align: left; margin: 22px 0 18px; padding: 16px 18px 16px 38px; background: #f6f7fb; border-radius: 14px; font-weight: 500; }
+  .steps li { padding: 3px 0; }
+  .timer { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .ring { width: 56px; height: 56px; margin: 0 auto; border: 5px solid var(--line); border-top-color: var(--green); border-radius: 50%; animation: spin .9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .icon { width: 76px; height: 76px; margin: 0 auto; }
+  .icon circle { fill: none; stroke-width: 5; stroke-dasharray: 227; stroke-dashoffset: 227; animation: draw .55s ease-out forwards; }
+  .icon path { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 60; stroke-dashoffset: 60; animation: draw .4s .45s ease-out forwards; }
+  .icon.ok circle, .icon.ok path { stroke: var(--green); }
+  .icon.bad circle, .icon.bad path { stroke: var(--red); }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  [hidden] { display: none !important; }
+  @media (max-width: 420px) { #amount { font-size: 2.8rem; } .body { padding: 24px 20px 22px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .ring { animation-duration: 3s; }
+    .icon circle, .icon path { animation: none; stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="kanga" aria-hidden="true"></div>
+  <div class="body">
+
+    <!-- Form -->
+    <form id="formView" novalidate>
+      <h1>Make a donation</h1>
+      <p class="sub">Pay with M-Pesa. You'll get a prompt on your phone.</p>
+
+      <label class="lbl" for="amount">Amount</label>
+      <div class="amount-box" id="amountBox">
+        <span>KES</span>
+        <input id="amount" inputmode="numeric" autocomplete="off" placeholder="0" aria-describedby="amountMsg">
+      </div>
+      <p class="msg" id="amountMsg" role="alert"></p>
+
+      <div class="chips" role="group" aria-label="Quick amounts">
+        <button type="button" class="chip" data-v="100">100</button>
+        <button type="button" class="chip" data-v="250">250</button>
+        <button type="button" class="chip" data-v="500">500</button>
+        <button type="button" class="chip" data-v="1000">1,000</button>
+        <button type="button" class="chip" data-v="2500">2,500</button>
+      </div>
+
+      <label class="lbl" for="phone">M-Pesa number</label>
+      <div class="phone" id="phoneBox">
+        <span class="cc">+254</span>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="712 345 678" aria-describedby="phoneMsg">
+      </div>
+      <p class="msg" id="phoneMsg" role="alert"></p>
+
+      <button class="btn" id="pay" type="submit">Donate with M-Pesa</button>
+      <p class="secure">Secured by Fortpesa. Your PIN is only entered on your phone.</p>
+    </form>
+
+    <!-- Waiting for M-Pesa -->
+    <div class="state" id="pendingView" hidden aria-live="polite">
+      <div class="ring" aria-hidden="true"></div>
+      <h2>Check your phone</h2>
+      <p>We sent an M-Pesa prompt for <b id="pAmount"></b> to</p>
+      <span class="phone-pill" id="pPhone"></span>
+      <ol class="steps">
+        <li>Open the M-Pesa prompt</li>
+        <li>Enter your PIN</li>
+        <li>Stay here. This page updates by itself.</li>
+      </ol>
+      <p>Waiting <span class="timer" id="timer">2:30</span></p>
+      <button class="btn ghost" id="stuck" type="button" hidden>No prompt? Go back and try again</button>
+    </div>
+
+    <!-- Success -->
+    <div class="state" id="okView" hidden aria-live="polite">
+      <svg class="icon ok" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="36"/><path d="M24 41l11 11 21-23"/></svg>
+      <h2>Thank you!</h2>
+      <p>Your donation of <b id="okAmount"></b> was received.</p>
+      <button class="btn" id="again" type="button">Make another donation</button>
+    </div>
+
+    <!-- Failure -->
+    <div class="state" id="failView" hidden aria-live="polite">
+      <svg class="icon bad" viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="36"/><path d="M28 28l24 24M52 28L28 52"/></svg>
+      <h2 id="failTitle"></h2>
+      <p id="failText"></p>
+      <button class="btn" id="retry" type="button">Try again</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const MIN = 1, MAX = 150000, POLL_MS = 3000, TIMEOUT_MS = 150000, STUCK_MS = 30000;
+const views = ['formView', 'pendingView', 'okView', 'failView'];
+const amt = $('amount'), phone = $('phone'), pay = $('pay');
+const touched = { amount: false, phone: false };
+let intentId = crypto.randomUUID();
+let run = 0; // cancels an in-progress poll when changed
+
+const kes = (n) => 'KES ' + n.toLocaleString('en-KE');
+const getAmount = () => Number(amt.value.replace(/\D/g, '')) || 0;
+const phoneDigits = () => phone.value.replace(/\s/g, '');
+const phoneValid = () => /^[17]\d{8}$/.test(phoneDigits());
+
+function show(id) {
+  views.forEach((v) => ($(v).hidden = v !== id));
+}
+
+function cleanPhone(raw) {
+  let d = raw.replace(/\D/g, '');
+  if (d.startsWith('254')) d = d.slice(3);
+  else if (d.startsWith('0')) d = d.slice(1);
+  return d.slice(0, 9);
+}
+
+function refresh() {
+  const n = getAmount();
+  document.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.v) === n)));
+  pay.textContent = n >= MIN && n <= MAX ? `Donate ${kes(n)} with M-Pesa` : 'Donate with M-Pesa';
+
+  const aMsg = n === 0 ? 'Enter an amount.' : n < MIN ? `The minimum is ${kes(MIN)}.` : n > MAX ? `The maximum is ${kes(MAX)}.` : '';
+  const pMsg = phoneValid() ? '' : phoneDigits() ? 'Enter 9 digits, like 712 345 678.' : 'Enter your Safaricom number.';
+  const showA = touched.amount && aMsg, showP = touched.phone && pMsg;
+  $('amountMsg').textContent = showA ? aMsg : '';
+  $('phoneMsg').textContent = showP ? pMsg : '';
+  $('amountBox').classList.toggle('invalid', !!showA);
+  $('phoneBox').classList.toggle('invalid', !!showP);
+  return { aMsg, pMsg };
+}
+
+amt.addEventListener('input', () => {
+  const d = amt.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 6);
+  amt.value = d ? Number(d).toLocaleString('en-KE') : '';
+  refresh();
+});
+amt.addEventListener('blur', () => { touched.amount = true; refresh(); });
+document.querySelectorAll('.chip').forEach((c) =>
+  c.addEventListener('click', () => {
+    amt.value = Number(c.dataset.v).toLocaleString('en-KE');
+    touched.amount = true;
+    refresh();
+    phone.focus();
+  })
+);
+
+phone.addEventListener('input', () => {
+  phone.value = cleanPhone(phone.value).replace(/(\d{3})(?=\d)/g, '$1 ');
+  refresh();
+});
+phone.addEventListener('blur', () => { if (phone.value) touched.phone = true; refresh(); });
+
+$('formView').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  touched.amount = touched.phone = true;
+  const { aMsg, pMsg } = refresh();
+  if (aMsg) return amt.focus();
+  if (pMsg) return phone.focus();
+
+  const n = getAmount();
+  pay.disabled = true;
+  pay.textContent = 'Sending prompt…';
+  try {
+    const res = await fetch('/api/donate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: n, phone: '0' + phoneDigits(), intentId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || 'Something went wrong. Try again.');
+    try { localStorage.setItem('donor_phone', phone.value); } catch {}
+    $('pAmount').textContent = kes(n);
+    $('pPhone').textContent = '+254 ' + phone.value;
+    show('pendingView');
+    poll(data.uuid, n);
+  } catch (err) {
+    $('phoneMsg').textContent = err.message;
+  } finally {
+    pay.disabled = false;
+    refresh();
+  }
+});
+
+async function poll(uuid, n) {
+  const token = ++run;
+  const start = Date.now();
+  $('stuck').hidden = true;
+  const tick = setInterval(() => {
+    const left = Math.max(0, TIMEOUT_MS - (Date.now() - start));
+    $('timer').textContent = `${Math.floor(left / 60000)}:${String(Math.floor(left / 1000) % 60).padStart(2, '0')}`;
+    if (Date.now() - start > STUCK_MS) $('stuck').hidden = false;
+  }, 500);
+
+  const finish = (view, a, b) => {
+    clearInterval(tick);
+    if (token !== run) return;
+    if (view === 'okView') $('okAmount').textContent = kes(n);
+    else { $('failTitle').textContent = a; $('failText').textContent = b; }
+    show(view);
+  };
+
+  while (Date.now() - start < TIMEOUT_MS && token === run) {
+    await new Promise((r) => setTimeout(r, POLL_MS));
+    if (token !== run) return clearInterval(tick);
+    try {
+      const res = await fetch(`/api/status/${uuid}`);
+      if (!res.ok) continue;
+      const { status } = await res.json();
+      if (status === 'success') return finish('okView');
+      if (status === 'failed') return finish('failView', 'Payment failed', 'The payment did not go through. No money was taken.');
+      if (status === 'cancelled') return finish('failView', 'Payment cancelled', 'You cancelled the prompt. No money was taken.');
+      if (status === 'expired') return finish('failView', 'Prompt expired', 'The M-Pesa prompt timed out. Try again.');
+    } catch { /* network blip: keep polling */ }
+  }
+  finish('failView', 'Still waiting', 'We have not received confirmation yet. If M-Pesa charged you, your donation will still be recorded.');
+}
+
+function backToForm(clearAmount) {
+  run++; // stop any polling
+  intentId = crypto.randomUUID();
+  if (clearAmount) { amt.value = ''; touched.amount = false; }
+  show('formView');
+  refresh();
+}
+$('stuck').addEventListener('click', () => backToForm(false));
+$('retry').addEventListener('click', () => backToForm(false));
+$('again').addEventListener('click', () => backToForm(true));
+
+try { phone.value = localStorage.getItem('donor_phone') || ''; } catch {}
+refresh();
+</script>
+</body>
+</html>
